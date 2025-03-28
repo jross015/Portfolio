@@ -1,0 +1,170 @@
+#include <iostream>
+#include <string>
+#include <stdlib.h>
+
+using namespace std;
+
+/// Node struct
+struct node
+{
+    int value;
+    char letter;
+    node *left;
+    node *right;
+    node *leftchar;
+    node *rightchar;
+};
+
+/// Creates new node
+node* newNode(int value, char letter)
+{
+    node* Node = new node;
+    Node->value = value;
+    Node->letter = letter;
+    Node->left = NULL;
+    Node->right = NULL;
+    Node->leftchar = NULL;
+    Node->rightchar = NULL;
+    return Node;
+}
+
+/// Inserts new node
+void insert(node **tree, int value, char letter)
+{
+    node *temp = NULL;
+
+    /// Tree is empty
+    if(*tree == NULL)
+    {
+        *tree = newNode(value, letter);
+        return;
+    }
+
+    /// If tree is not empty, finds node position
+    temp = *tree;
+    if(value < temp->value)
+    {
+        insert(&(temp->left), value, letter);
+    }
+    else if(value > temp->value)
+    {
+        insert(&(temp->right), value, letter);
+    }
+    else if(value == temp->value)
+    {
+        if(letter < temp->letter)
+        {
+            insert(&(temp->leftchar), value, letter);
+        }
+        else
+        {
+            insert(&(temp->rightchar), value, letter);
+        }
+    }
+}
+
+/// Inorder traversal
+void inorder(node *tree)
+{
+    if(tree != NULL)
+    {
+        inorder(tree->left);
+        cout << tree->value << "-" << tree->letter << endl;
+        inorder(tree->leftchar);
+        inorder(tree->rightchar);
+        inorder(tree->right);
+    }
+}
+
+/// reverse traversal
+void reverse(node *tree)
+{
+    if(tree != NULL)
+    {
+        reverse(tree->right);
+        cout << tree->value << "-" << tree->letter << endl;
+        reverse(tree->rightchar);
+        reverse(tree->leftchar);
+        reverse(tree->left);
+    }
+}
+
+/// Searches for nodes
+bool search(node *tree, int value, char letter)
+{
+    ///Node cannot be found
+    if(tree == NULL)
+    {
+        return false;
+    }
+    /// Node can be found
+    else if(tree->value == value && tree->letter == letter)
+    {
+        return true;
+    }
+    /// Left node values
+    else if(value < tree->value)
+    {
+        return search(tree->left, value, letter);
+    }
+    ///Right node values
+    else if(value > tree->value)
+    {
+        return search(tree->right, value, letter);
+    }
+    /// Returns left and right values
+    else if(value == tree->value)
+    {
+        if(letter < tree->letter)
+        {
+            return search(tree->leftchar, value, letter);
+        }
+        else
+        {
+            return search(tree->rightchar, value, letter);
+        }
+    }
+    ///No values
+    return false;
+}
+
+/// Main function
+int main()
+{
+    int nodes;
+    int value;
+    char letter;
+    node *root = NULL;
+    cout << "How many nodes do you want to add? ";
+    cin >> nodes;
+
+    /// Prompts user for node and letter values
+    for(int i = 0; i < nodes; i++)
+    {
+        cout << "Please enter value for node " << i+1 << ": ";
+        cin >> value;
+        cout << "Please enter letter for node " << i+1 << ": ";
+        cin >> letter;
+        /// inserts values into tree
+        insert(&root, value, letter);
+    }
+///Displays inorder traversal
+    cout << "\nInorder traversal of tree is : " << endl;
+    inorder(root);
+    ///Displays reverse traversal
+    cout << "\nReverse traversal of tree is : " << endl;
+    reverse(root);
+///Prompts user for value to search
+    cout << "\nPlease enter value to search: ";
+    cin >> value;
+    ///Prompts user for letter to search
+    cout << "Please enter letter to search: ";
+    cin >> letter;
+    ///If letter and number combination is found, display it, if not display not found
+    if(search(root, value, letter))
+        cout << "\nFound!\n";
+    else
+        cout << "\nNot Found!\n";
+
+    return 0;
+}
